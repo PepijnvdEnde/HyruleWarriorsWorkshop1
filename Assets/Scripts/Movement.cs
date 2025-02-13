@@ -3,20 +3,17 @@ using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour
 {
-    [SerializeField]
-    private float _rotationSpeed = 200.0f;
+    [SerializeField] private float _rotationSpeed = 200.0f;
 
-    [SerializeField]
-    private float _speed = 5f;
+    [SerializeField] private float _speed = 5f;
+    
+    [SerializeField] private float _jumpForce = 5f;
 
     private Vector3 _movement;
     private Rigidbody _rigidbody;
     private float _mouseX, _mouseY;
     private Transform _cameraTransform;
     private float _verticalRotation = 0f;
-    private Camera _playerCamera;
-    private Camera _otherCamera;
-    private bool _onPlayerCamera = true;
 
     void OnMove(InputValue Input)
     {
@@ -33,7 +30,6 @@ public class Movement : MonoBehaviour
 
     void Start()
     {
-        _playerCamera = Camera.main;
         _rigidbody = GetComponent<Rigidbody>();
         _cameraTransform = Camera.main.transform;
         Cursor.lockState = CursorLockMode.Locked;
@@ -47,18 +43,19 @@ public class Movement : MonoBehaviour
 
     private void Update()
     {
-        transform.Rotate(Vector3.up * _mouseX * (_rotationSpeed / 1000));
+        float rotationAmount = (_rotationSpeed * _mouseX) / 1000f;
+        transform.Rotate(Vector3.up * rotationAmount);
 
         _verticalRotation -= _mouseY * (_rotationSpeed / 1000);
         _verticalRotation = Mathf.Clamp(_verticalRotation, -90f, 90f);
         _cameraTransform.localRotation = Quaternion.Euler(_verticalRotation, 0, 0);
     }
-    
+
     void OnJump(InputValue input)
     {
         if (input.isPressed && Mathf.Abs(_rigidbody.linearVelocity.y) < 0.01f)
         {
-            _rigidbody.AddForce(Vector3.up * 5, ForceMode.Impulse);
+            _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
         }
     }
 }
